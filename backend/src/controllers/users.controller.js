@@ -1,30 +1,19 @@
-// src/controllers/users.controller.js
+// users.controller.js
 
-// GET all users
 exports.getUsers = (req, res) => {
-  return res.json({
+  res.json({
     status: "success",
-    message: "Users list fetched successfully",
+    message: "Users controller working",
     data: [],
   });
 };
 
-// GET single user
-exports.getUserById = (req, res) => {
-  const { id } = req.params;
-
-  return res.json({
-    status: "success",
-    message: "Single user fetched successfully",
-    userId: id,
-  });
-};
-
-// CREATE user (dummy)
 exports.createUser = (req, res) => {
-  return res.json({
+  const userData = req.body;
+
+  res.json({
     status: "success",
-    message: "User created successfully (dummy)",
-    payload: req.body,
+    message: "User created (temporary without DB)",
+    data: userData,
   });
 };

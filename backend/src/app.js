@@ -1,22 +1,14 @@
 const express = require("express");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
 const app = express();
 
-// middleware
-app.use(express.json());
+app.use(express.json()); // ⭐ बहुत जरूरी
 
-// test route
-app.get("/api", (req, res) => {
-  res.json({
-    status: "success",
-    message: "SkillGo API Working",
-  });
+const userRoutes = require("./routes/users");
+
+// ⭐ यही line सबसे important है
+app.use("/api/users", userRoutes);
+
+const PORT = 5006;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-// users route
-app.use("/api/users", require("./routes/userroutes"));
-
-module.exports = app;

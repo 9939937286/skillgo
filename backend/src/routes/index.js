@@ -1,15 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const usersRoutes = require("./users");
+const userRoutes = require("./userroutes");
 
-router.get("/", (req, res) => {
-  res.json({
-    status: "success",
-    message: "SkillGo API root working",
-  });
-});
-
-router.use("/users", usersRoutes);
+router.use("/users", userRoutes);
 
 module.exports = router;

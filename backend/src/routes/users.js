@@ -1,38 +1,21 @@
 const express = require("express");
+const User = require("../models/User");
+
 const router = express.Router();
 
-// TEMP memory (database नहीं)
-let users = [];
-
-// POST API
-router.post("/", (req, res) => {
-  const { name, email } = req.body;
-
-  if (!name || !email) {
-    return res.status(400).json({
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: "Name aur Email required hai"
+      message: error.message,
     });
   }
-
-  const newUser = {
-    id: Date.now(),
-    name,
-    email
-  };
-
-  users.push(newUser);
-
-  res.status(201).json({
-    success: true,
-    message: "User save ho gaya",
-    data: newUser
-  });
-});
-
-// GET API (check ke liye)
-router.get("/", (req, res) => {
-  res.json(users);
 });
 
 module.exports = router;

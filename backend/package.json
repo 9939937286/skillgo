@@ -1,18 +1,16 @@
 {
   "name": "skillgo-backend",
   "version": "1.0.0",
-  "description": "SkillGo Backend Server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^4.19.2",
-    "mongoose": "^9.1.4"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.3"
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.21.0"
   }
 }

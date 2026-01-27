@@ -1,10 +1,18 @@
-const app = require("./app");
-const connectDB = require("./src/config/db");
+const express = require("express");
+const router = express.Router();
 
-connectDB();
+const {
+  createUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser
+} = require("../controllers/user.controller");
 
-const PORT = process.env.PORT || 5006;
+router.post("/", createUser);
+router.get("/", getUsers);
+router.get("/:id", getUserById);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = router;

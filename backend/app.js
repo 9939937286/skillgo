@@ -1,16 +1,17 @@
-require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
+
+const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
-
-// routes
-app.use("/api/auth", require("./src/routes/auth"));
-app.use("/api/users", require("./src/routes/users"));
 
 app.get("/", (req, res) => {
   res.send("SkillGo API Running");
 });
+
+app.use("/api/users", userRoutes);
 
 module.exports = app;

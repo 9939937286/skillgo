@@ -1,0 +1,17 @@
+const express = require("express");
+const authRoutes = require("./routes/authRoutes");
+const testRoutes = require("./routes/testRoutes");
+
+const app = express();
+
+app.use(express.json());
+
+// ONLY these two for now
+app.use("/api/auth", authRoutes);
+app.use("/api/test", testRoutes);
+
+app.get("/", (req, res) => {
+  res.send("🚀 SkillGo Backend App Running");
+});
+
+module.exports = app;

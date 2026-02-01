@@ -1,18 +1,22 @@
 const express = require("express");
-const router = express.Router();
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const companyRoutes = require("./routes/companyRoutes");
 
-const {
-  createUser,
-  getUsers,
-  getUserById,
-  updateUser,
-  deleteUser
-} = require("../controllers/user.controller");
+dotenv.config();
 
-router.post("/", createUser);
-router.get("/", getUsers);
-router.get("/:id", getUserById);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+const app = express();
+app.use(express.json());
 
-module.exports = router;
+// ROUTES
+app.use("/api/company", companyRoutes);
+
+// DB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+
+const PORT = process.env.PORT || 5006;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

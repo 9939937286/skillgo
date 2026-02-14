@@ -1,50 +1,19 @@
-const Job = require("../models/Job");
+const JobApplication = require("../models/JobApplication");
 
-// CREATE JOB
-const createJob = async (req, res) => {
+const getJobApplications = async (req, res) => {
   try {
-    const { title, description, salary, location } = req.body;
+    const { jobId } = req.params;
 
-    if (!title || !description || !salary || !location) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
+    const applications = await JobApplication.find({ job: jobId })
+      .populate("worker", "name phone")
+      .sort({ createdAt: -1 });
 
-    const job = await Job.create({
-      companyId: req.company.id,
-      title,
-      description,
-      salary,
-      location,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Job created successfully",
-      job,
-    });
+    res.status(200).json(applications);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// GET COMPANY JOBS
-const getCompanyJobs = async (req, res) => {
-  try {
-    const jobs = await Job.find({ companyId: req.company.id });
-    res.json({
-      success: true,
-      count: jobs.length,
-      jobs,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 module.exports = {
-  createJob,
-  getCompanyJobs,
+  getJobApplications
 };

@@ -1,29 +1,13 @@
-const CompanyJob = require("../models/CompanyJob");
+const Job = require("../models/Job");
 
-const getAllJobs = async (req, res) => {
+exports.getAllJobs = async (req, res) => {
   try {
-    const jobs = await CompanyJob.find()
-      .populate({
-        path: "companyId",
-        select: "name email",
-      })
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      count: jobs.length,
-      jobs,
-    });
-  } catch (error) {
-    console.error("❌ Worker getAllJobs error:", error.message);
-
-    return res.status(500).json({
-      success: false,
+    const jobs = await Job.find().sort({ createdAt: -1 });
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500).json({
       message: "Failed to fetch jobs",
+      error: err.message
     });
   }
-};
-
-module.exports = {
-  getAllJobs,
 };

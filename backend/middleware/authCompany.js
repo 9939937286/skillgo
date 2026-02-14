@@ -1,24 +1,30 @@
 const jwt = require("jsonwebtoken");
-const Company = require("../models/Company");
 
-module.exports = async (req, res, next) => {
+module.exports = function (req, res, next) {
+  let token = req.header("Authorization");
+
+  if (!token) {
+    return res.status(401).json({ message: "No token, authorization denied" });
+  }
+
+  if (token.startsWith("Bearer ")) {
+    token = token.slice(7).trim();
+  }
+
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ success: false, message: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const company = await Company.findById(decoded.id).select("-password");
-    if (!company) {
-      return res.status(401).json({ success: false, message: "Invalid token" });
+    // 🔥 IMPORTANT FIX
+    req.company = {
+      id: decoded.id || decoded.companyId || decoded._id
+    };
+
+    if (!req.company.id) {
+      return res.status(401).json({ message: "Invalid token payload" });
     }
 
-    req.company = company; // 👈 ownership ke liye
     next();
   } catch (err) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    res.status(401).json({ message: "Token is not valid" });
   }
 };

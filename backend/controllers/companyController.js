@@ -1,96 +1,31 @@
 const Company = require("../models/Company");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
-// REGISTER
-exports.registerCompany = async (req, res) => {
+exports.updateCompanyProfile = async (req, res) => {
   try {
-    const { companyName, email, phone, password } = req.body;
+    const companyId = req.user.id;
 
-    if (!companyName || !email || !phone || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required"
-      });
-    }
+    const { phone, address, gst, pan } = req.body;
 
-    const exists = await Company.findOne({ email });
-    if (exists) {
-      return res.status(400).json({
-        success: false,
-        message: "Company already exists"
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const company = await Company.create({
-      companyName,
-      email,
-      phone,
-      password: hashedPassword
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Company registered successfully",
-      company: {
-        id: company._id,
-        companyName: company.companyName,
-        email: company.email
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-// LOGIN
-exports.loginCompany = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password required"
-      });
-    }
-
-    const company = await Company.findOne({ email });
+    const company = await Company.findById(companyId);
     if (!company) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials"
-      });
+      return res.status(404).json({ message: "Company not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, company.password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials"
-      });
-    }
+    if (phone) company.phone = phone;
+    if (address) company.address = address;
+    if (gst) company.gst = gst;
+    if (pan) company.pan = pan;
 
-    const token = jwt.sign(
-      { id: company._id },
-      process.env.JWT_SECRET || "skillgo_secret",
-      { expiresIn: "7d" }
-    );
+    await company.save();
 
-    res.json({
-      success: true,
-      token,
-      company: {
-        id: company._id,
-        companyName: company.companyName,
-        email: company.email
-      }
+    res.status(200).json({
+      message: "Company profile updated successfully",
+      company
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
   }
 };

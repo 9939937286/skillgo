@@ -1,25 +1,26 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({
-      success: false,
-      message: "No token provided",
-    });
-  }
-
-  const token = authHeader.split(" ")[1];
-
+module.exports = function (req, res, next) {
   try {
+    const authHeader = req.header("Authorization");
+
+    // Header check
+    if (!authHeader) {
+      return res.status(401).json({ msg: "No token, authorization denied" });
+    }
+
+    // Bearer token split
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : authHeader;
+
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, role }
+
+    req.user = decoded.user;
     next();
   } catch (err) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
+    console.error("Auth Error:", err.message);
+    res.status(401).json({ msg: "Token is not valid" });
   }
 };

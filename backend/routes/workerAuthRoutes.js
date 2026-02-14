@@ -3,13 +3,13 @@ const router = express.Router();
 
 const {
   registerWorker,
-  loginWorker
+  loginWorker,
 } = require("../controllers/workerAuthController");
 
-// REGISTER
+/* =========================
+   Worker Auth Routes
+========================= */
 router.post("/register", registerWorker);
-
-// LOGIN
 router.post("/login", loginWorker);
 
 module.exports = router;

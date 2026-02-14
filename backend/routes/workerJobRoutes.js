@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { applyForJob } = require("../controllers/workerJobController");
+const auth = require("../middleware/auth");
 
-const workerAuthMiddleware = require("../middlewares/workerAuthMiddleware");
-const { getAllJobs } = require("../controllers/workerJobController");
-
-router.get("/jobs", workerAuthMiddleware, getAllJobs);
+// Worker apply job
+router.post("/apply/:jobId", auth, applyForJob);
 
 module.exports = router;

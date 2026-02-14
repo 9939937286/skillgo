@@ -1,35 +1,46 @@
-const mongoose = require("mongoose");
+const express = require("express");
+const router = express.Router();
+const Job = require("../models/Job");
+const auth = require("../middleware/auth");
 
-const jobSchema = new mongoose.Schema(
-  {
-    company: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Company",
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String,
-      required: true
-    },
-    location: {
-      type: String,
-      required: true
-    },
-    salary: {
-      type: Number,
-      required: true
-    },
-    jobType: {
-      type: String,
-      enum: ["Full-time", "Part-time", "Contract"],
-      default: "Full-time"
-    }
-  },
-  { timestamps: true }
-);
+/**
+ * CREATE JOB
+ * POST /api/jobs/create
+ */
+router.post("/create", auth, async (req, res) => {
+  try {
+    const job = new Job(req.body);
+    await job.save();
 
-module.exports = mongoose.model("Job", jobSchema);
+    res.json({
+      success: true,
+      message: "Job created",
+      job,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET ALL JOBS
+ * GET /api/jobs
+ */
+router.get("/", async (req, res) => {
+  const jobs = await Job.find().sort({ createdAt: -1 });
+  res.json({ success: true, jobs });
+});
+
+/**
+ * GET SINGLE JOB
+ * GET /api/jobs/:id
+ */
+router.get("/:id", async (req, res) => {
+  const job = await Job.findById(req.params.id);
+  if (!job) {
+    return res.status(404).json({ message: "Job not found" });
+  }
+  res.json({ success: true, job });
+});
+
+module.exports = router;

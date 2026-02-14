@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {
-  registerCompany,
-  loginCompany
-} = require("../controllers/companyController");
 
-router.post("/register", registerCompany);
-router.post("/login", loginCompany);
+const { getJobApplications } = require("../controllers/companyJobController");
+const { protectCompany } = require("../middleware/authMiddleware");
+
+router.get(
+  "/job/:jobId/applications",
+  protectCompany,
+  getJobApplications
+);
 
 module.exports = router;

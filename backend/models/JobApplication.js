@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const jobApplicationSchema = new mongoose.Schema(
   {
-    job: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
-      required: true
-    },
     worker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Worker",
+      required: true
+    },
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
       required: true
     },
     company: {
@@ -17,10 +17,13 @@ const jobApplicationSchema = new mongoose.Schema(
       ref: "Company",
       required: true
     },
+    message: {
+      type: String
+    },
     status: {
       type: String,
-      enum: ["Applied", "Shortlisted", "Rejected"],
-      default: "Applied"
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending"
     }
   },
   { timestamps: true }

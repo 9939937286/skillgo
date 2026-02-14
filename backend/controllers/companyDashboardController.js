@@ -1,49 +1,30 @@
-// NOTE: Abhi Mongo skip mode me bhi kaam karega
-// Later real models plug-in honge (SkillGo rule followed)
+const Company = require("../models/Company");
 
-exports.getCompanyProfile = async (req, res) => {
+exports.getCompanyDashboard = async (req, res) => {
   try {
-    const user = req.user; // JWT se aa raha hai
+    // 🔥 id yahin se aa rahi
+    const companyId = req.company.id;
+
+    const company = await Company.findById(companyId).select("-password");
+
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
 
     res.status(200).json({
-      success: true,
-      message: "Company profile fetched successfully",
-      data: {
-        companyId: user.id,
-        companyName: user.name || "SkillGo Company",
-        role: user.role,
-        email: user.email,
-        status: "ACTIVE",
-        verified: true
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch company profile"
-    });
-  }
-};
-
-exports.getCompanyDashboardSummary = async (req, res) => {
-  try {
-    // Abhi counters static logic
-    // Mongo aate hi yahin se real counts niklenge
-
-    res.status(200).json({
-      success: true,
-      message: "Company dashboard summary",
-      data: {
+      message: "Company dashboard loaded successfully",
+      dashboard: {
+        companyId: company._id,
+        companyName: company.companyName,
+        email: company.email,
+        joinedOn: company.createdAt,
         totalJobs: 0,
-        activeManpower: 0,
-        linkedAgents: 0,
-        pendingApprovals: 0
+        activeJobs: 0,
+        workersHired: 0
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to load dashboard summary"
-    });
+    console.error("Dashboard Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("../middleware/authMiddleware");
-const {
-  applyToJob,
-  getCompanyApplicants
-} = require("../controllers/jobApplicationController");
+const { applyJob } = require("../controllers/jobApplicationController");
+const { protect } = require("../middleware/authMiddleware");
 
-router.post("/apply", auth, applyToJob);
-router.get("/company/applicants", auth, getCompanyApplicants);
+/* =========================
+   Worker Apply Job
+========================= */
+router.post("/apply", protect, applyJob);
 
 module.exports = router;

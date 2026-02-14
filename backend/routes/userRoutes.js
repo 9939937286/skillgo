@@ -1,19 +1,28 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-const {
-  registerUser,
-  loginUser,
-  getMe,
-} = require("../controllers/userController");
+// LOGIN ROUTE (REAL JWT)
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-const authMiddleware = require("../middleware/authMiddleware");
+  // temporary hardcoded user (abhi DB baad me)
+  if (email === "company@test.com" && password === "123456") {
+    const token = jwt.sign(
+      { id: "COMPANY_001", role: "company" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-// auth
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+    return res.json({
+      token,
+      message: "Login successful",
+    });
+  }
 
-// ✅ THIS WAS MISSING / BROKEN
-router.get("/me", authMiddleware, getMe);
+  return res.status(401).json({
+    message: "Invalid credentials",
+  });
+});
 
 module.exports = router;

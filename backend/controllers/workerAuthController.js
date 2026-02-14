@@ -2,26 +2,20 @@ const Worker = require("../models/Worker");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-/**
- * Worker Register
- */
+/* =========================
+   Worker Register
+========================= */
 exports.registerWorker = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({ message: "All fields required" });
     }
 
-    const existingWorker = await Worker.findOne({ email });
-    if (existingWorker) {
-      return res.status(400).json({
-        success: false,
-        message: "Worker already exists",
-      });
+    const existing = await Worker.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "Worker already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,60 +24,43 @@ exports.registerWorker = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      phone,
+      role: "worker",
     });
 
     res.status(201).json({
-      success: true,
       message: "Worker registered successfully",
       worker,
     });
-  } catch (error) {
-    console.error("Worker Register Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
-/**
- * Worker Login
- */
+/* =========================
+   Worker Login
+========================= */
 exports.loginWorker = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required",
-      });
-    }
-
     const worker = await Worker.findOne({ email });
     if (!worker) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, worker.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
       { id: worker._id, role: "worker" },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" } // ✅ FIXED
+      { expiresIn: "7d" }
     );
 
-    res.status(200).json({
-      success: true,
+    res.json({
       message: "Login successful",
       token,
       worker: {
@@ -92,11 +69,7 @@ exports.loginWorker = async (req, res) => {
         email: worker.email,
       },
     });
-  } catch (error) {
-    console.error("Worker Login Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };

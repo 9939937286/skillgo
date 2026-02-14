@@ -1,22 +1,32 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const companyRoutes = require("./routes/companyRoutes");
+// 🚀 Smart Caller Backend Server
 
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./mongodb"); // 🍃 MongoDB File
 
 const app = express();
+
+// ✅ MongoDB Connect
+connectDB();
+
+// ✅ Middleware
+app.use(cors());
 app.use(express.json());
 
-// ROUTES
-app.use("/api/company", companyRoutes);
+// 📂 Routes
+const voiceRoute = require("./routes/voice");
 
-// DB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+// ✅ API Routes
+app.use("/api", voiceRoute);
 
-const PORT = process.env.PORT || 5006;
+// 🧪 Test Route
+app.get("/", (req, res) => {
+  res.send("✅ Smart Caller Server Running...");
+});
+
+// 🌐 Server Start
+const PORT = 5006;
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🔥 Server running on http://localhost:${PORT}`);
 });

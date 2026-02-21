@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Incoming Call Aura</title>
+
+<style>
+body{
+ margin:0;
+ background:#000;
+ font-family:Arial;
+ color:#fff;
+ overflow:hidden;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ height:100vh;
+}
+
+/* CALL TEXT */
+#caller{
+ position:absolute;
+ top:30%;
+ text-align:center;
+ font-size:22px;
+}
+
+/* AURA RINGS */
+.aura{
+ position:absolute;
+ left:50%;
+ top:50%;
+ border-radius:50%;
+ transform:translate(-50%,-50%);
+ pointer-events:none;
+ filter:blur(10px);
+}
+
+#a1{ width:140px;height:140px;
+ background:radial-gradient(circle,rgba(0,255,180,0.9),transparent);}
+
+#a2{ width:240px;height:240px;
+ background:radial-gradient(circle,rgba(0,150,255,0.5),transparent);}
+
+#a3{ width:340px;height:340px;
+ background:radial-gradient(circle,rgba(255,0,200,0.3),transparent);}
+
+/* BUTTONS */
+.controls{
+ position:absolute;
+ bottom:80px;
+ display:flex;
+ gap:60px;
+}
+
+.btn{
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ font-size:22px;
+ cursor:pointer;
+}
+
+.accept{ background:#00c853;}
+.reject{ background:#d50000;}
+
+.rotate{
+ animation:spin 6s linear infinite;
+}
+
+@keyframes spin{
+ from{transform:translate(-50%,-50%) rotate(0deg);}
+ to{transform:translate(-50%,-50%) rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="caller">📞 Faizan Calling…</div>
+
+<div id="a1" class="aura rotate"></div>
+<div id="a2" class="aura rotate"></div>
+<div id="a3" class="aura rotate"></div>
+
+<div class="controls">
+ <div class="btn accept">✔</div>
+ <div class="btn reject">✖</div>
+</div>
+
+<script>
+let audioContext;
+let analyser;
+let dataArray;
+
+async function startMic(){
+ try{
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  audioContext = new (window.AudioContext||window.webkitAudioContext)();
+  analyser = audioContext.createAnalyser();
+  const mic = audioContext.createMediaStreamSource(stream);
+
+  analyser.fftSize=256;
+  const bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+
+  mic.connect(analyser);
+  animateAura();
+
+ }catch(e){
+  alert("Mic allow करें");
+ }
+}
+
+function animateAura(){
+
+ analyser.getByteFrequencyData(dataArray);
+
+ let sum=0;
+ for(let i=0;i<dataArray.length;i++){ sum+=dataArray[i]; }
+
+ let volume = sum/dataArray.length;
+
+ let a1=document.getElementById("a1");
+ let a2=document.getElementById("a2");
+ let a3=document.getElementById("a3");
+
+ let s1=1+(volume/80);
+ let s2=1+(volume/120);
+ let s3=1+(volume/160);
+
+ a1.style.transform="translate(-50%,-50%) scale("+s1+")";
+ a2.style.transform="translate(-50%,-50%) scale("+s2+")";
+ a3.style.transform="translate(-50%,-50%) scale("+s3+")";
+
+ requestAnimationFrame(animateAura);
+}
+
+startMic();
+</script>
+
+</body>
+</html>

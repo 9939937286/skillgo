@@ -1,0 +1,101 @@
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* 🌌 LIVING BACKGROUND */
+body::before{
+  content:"";
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle,#001a33,#000);
+  animation:breathBG 6s infinite ease-in-out;
+  z-index:-1;
+}
+
+@keyframes breathBG{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+
+body.incomingBG::before{background:radial-gradient(circle,#003366,#000);}
+body.acceptedBG::before{background:radial-gradient(circle,#003300,#000);}
+body.rejectedBG::before{background:radial-gradient(circle,#440000,#000);}
+
+/* FLOATING BAR */
+#floatingBar{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.8);
+  padding:12px 20px;
+  border-radius:40px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 20px cyan;
+  transition:.4s;
+}
+
+#floatingBar img{
+  width:40px;height:40px;border-radius:50%;
+}
+
+.hideBar{opacity:0;top:-80px;}
+.showBar{opacity:1;top:20px;}
+
+#callerScreen{text-align:center;}
+
+/* 🌌 AURA RING */
+#auraRing{
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  border:3px solid cyan;
+  box-shadow:0 0 25px cyan,0 0 50px blue;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:auto;
+  margin-bottom:20px;
+  animation:auraPulse 2s infinite;
+}
+
+@keyframes auraPulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+
+/* 🚀 HOLOGRAM 3D EFFECT */
+#hologram3D{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  overflow:hidden;
+  transform-style:preserve-3d;
+  animation:holoFloat 4s infinite ease-in-out;
+}
+
+#hologram3D img{
+  width:100%;
+  border-radius:50%;
+}
+
+/* Floating + Tilt */
+@keyframes holoFloat{
+  0%{transform:translateY(0) rotateX(0deg) rotateY(0deg);}
+  50%{transform:translateY(-12px) rotateX(8deg) rotateY(8deg);}
+  100%{transform:translateY(0) rotateX(0deg) rotateY(0deg);}
+}

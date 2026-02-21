@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ULTRA LIVE AI AURA</title>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  overflow:hidden;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:#fff;
+}
+
+/* TEXT */
+h2{
+  position:absolute;
+  z-index:5;
+  text-align:center;
+  font-weight:normal;
+}
+
+/* 🔥 BASE AURA STYLE */
+.aura{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:none;
+  filter:blur(8px);
+}
+
+/* 3 LAYERS */
+#aura1{
+  width:140px;
+  height:140px;
+  background:radial-gradient(circle, rgba(0,255,200,0.9), transparent);
+}
+
+#aura2{
+  width:240px;
+  height:240px;
+  background:radial-gradient(circle, rgba(0,150,255,0.6), transparent);
+}
+
+#aura3{
+  width:340px;
+  height:340px;
+  background:radial-gradient(circle, rgba(255,0,200,0.3), transparent);
+}
+
+/* ROTATION ANIMATION */
+.rotate{
+  animation:spin 8s linear infinite;
+}
+
+@keyframes spin{
+  from{ transform:translate(-50%,-50%) rotate(0deg); }
+  to{ transform:translate(-50%,-50%) rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎤 बोलिये — ULTRA LIVE AI AURA ACTIVE</h2>
+
+<div id="aura1" class="aura rotate"></div>
+<div id="aura2" class="aura rotate"></div>
+<div id="aura3" class="aura rotate"></div>
+
+<script>
+let audioContext;
+let analyser;
+let microphone;
+let dataArray;
+
+async function startUltraAura(){
+
+  try{
+
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    microphone = audioContext.createMediaStreamSource(stream);
+
+    analyser.fftSize = 256;
+
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+
+    microphone.connect(analyser);
+
+    animateAura();
+
+  }catch(e){
+    alert("Mic permission allow करें");
+    console.log(e);
+  }
+}
+
+function animateAura(){
+
+  analyser.getByteFrequencyData(dataArray);
+
+  let sum = 0;
+  for(let i=0;i<dataArray.length;i++){
+    sum += dataArray[i];
+  }
+
+  let volume = sum / dataArray.length;
+
+  const a1 = document.getElementById("aura1");
+  const a2 = document.getElementById("aura2");
+  const a3 = document.getElementById("aura3");
+
+  // 🔥 SCALE BASED ON VOICE
+  let scale1 = 1 + (volume/80);
+  let scale2 = 1 + (volume/120);
+  let scale3 = 1 + (volume/160);
+
+  a1.style.transform = "translate(-50%,-50%) scale("+scale1+")";
+  a2.style.transform = "translate(-50%,-50%) scale("+scale2+")";
+  a3.style.transform = "translate(-50%,-50%) scale("+scale3+")";
+
+  // 🎨 COLOR CHANGE BASED ON VOICE
+  let r = Math.min(255, volume*3);
+  let g = 255 - volume;
+  let b = 200;
+
+  a1.style.background = "radial-gradient(circle, rgb("+r+","+g+","+b+"), transparent)";
+  a2.style.background = "radial-gradient(circle, rgba("+g+","+b+","+r+",0.6), transparent)";
+  a3.style.background = "radial-gradient(circle, rgba("+b+","+r+","+g+",0.3), transparent)";
+
+  requestAnimationFrame(animateAura);
+}
+
+startUltraAura();
+</script>
+
+</body>
+</html>

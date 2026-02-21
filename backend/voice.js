@@ -1,34 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { startVoiceControl } from "./voiceControl";
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
 
-function App() {
-  const [lang, setLang] = useState("hi-IN");
+const app = express();
+app.use(express.json());
 
-  // 📞 Accept Call Function
-  function acceptCall() {
-    alert("📞 Call Accepted by Voice AI");
-  }
+// MongoDB Connect
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+    console.log("✅ MongoDB Connected Successfully");
+})
+.catch(err => {
+    console.log("❌ MongoDB Error:", err.message);
+});
 
-  // 🎤 Start Voice Engine
-  useEffect(() => {
-    startVoiceControl(lang, acceptCall);
-  }, [lang]);
+// Test Route
+app.get("/", (req, res) => {
+    res.send("🔥 Smart Caller Backend Running...");
+});
 
-  return (
-    <div style={{ padding: 40 }}>
-      <h2>🎤 Smart Caller Voice Test</h2>
+const PORT = 5000;
 
-      <p>Select Language:</p>
-
-      <select onChange={(e) => setLang(e.target.value)}>
-        <option value="hi-IN">Hindi</option>
-        <option value="en-US">English</option>
-        <option value="ur-PK">Urdu</option>
-      </select>
-
-      <h3>🎙️ Bolo: "call uthao"</h3>
-    </div>
-  );
-}
-
-export default App;
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+});

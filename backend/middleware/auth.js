@@ -1,26 +1,26 @@
-const jwt = require("jsonwebtoken");
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SmartCaller Omnipresence</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-module.exports = function (req, res, next) {
-  try {
-    const authHeader = req.header("Authorization");
+<div id="callerScreen" class="idle">
 
-    // Header check
-    if (!authHeader) {
-      return res.status(401).json({ msg: "No token, authorization denied" });
-    }
+  <div id="hologram"></div>
 
-    // Bearer token split
-    const token = authHeader.startsWith("Bearer ")
-      ? authHeader.split(" ")[1]
-      : authHeader;
+  <h2 id="statusText">SmartCaller Ready...</h2>
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  <div class="controls">
+    <button onclick="acceptCall()">Accept</button>
+    <button onclick="rejectCall()">Reject</button>
+    <button onclick="outgoingCall()">Outgoing</button>
+  </div>
 
-    req.user = decoded.user;
-    next();
-  } catch (err) {
-    console.error("Auth Error:", err.message);
-    res.status(401).json({ msg: "Token is not valid" });
-  }
-};
+</div>
+
+<script src="caller.js"></script>
+</body>
+</html>
